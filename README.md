@@ -4,4 +4,5 @@ testing out open gl
 
 ## build dependencies
 
-freeglut
+* freeglut3-dev
+* libdevil-dev
