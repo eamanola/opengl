@@ -51,7 +51,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gRotatingTexture.loadTextureFromFile( "./texture.png" ) )
+  if ( !gRotatingTexture.loadTextureFromFile( "../assets/texture.png" ) )
   {
     printf( "Unable to load OpenGL texture!\n" );
     return false;

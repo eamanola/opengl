@@ -47,7 +47,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gCircleTexture.loadTextureFromFileWithColorKey( "./circle.png", 000, 255, 255 ) )
+  if ( !gCircleTexture.loadTextureFromFileWithColorKey( "../assets/circle.png", 000, 255, 255 ) )
   {
     printf( "Unable to load circle texture!\n" );
     return false;

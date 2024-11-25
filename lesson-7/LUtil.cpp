@@ -44,7 +44,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gArrowTexture.loadTexttureFromFile( "./arrows.png" ) )
+  if ( !gArrowTexture.loadTexttureFromFile( "../assets/arrows.png" ) )
   {
     printf( "Unable to load arrow texture!\n" );
     return false;

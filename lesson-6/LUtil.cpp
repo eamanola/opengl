@@ -42,7 +42,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gLoadedTexture.loadTexttureFromFile( "./texture.png" ) )
+  if ( !gLoadedTexture.loadTexttureFromFile( "../assets/texture.png" ) )
   {
     printf( "Unable to load file texture!\n" );
     return false;

@@ -48,7 +48,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gRotatingTexture.loadTextureFromFile( "./arrow.png" ) )
+  if ( !gRotatingTexture.loadTextureFromFile( "../assets/arrow.png" ) )
   {
     printf( "Unable to load arrow texture!\n" );
     return false;

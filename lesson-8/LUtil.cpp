@@ -43,7 +43,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gNon2NTexture.loadTexttureFromFile( "./opengl.png" ) )
+  if ( !gNon2NTexture.loadTexttureFromFile( "../assets/opengl.png" ) )
   {
     printf( "Unable to load non-power-of-two texture!\n" );
     return false;

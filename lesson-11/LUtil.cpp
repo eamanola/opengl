@@ -51,7 +51,7 @@ bool initGL()
 
 bool loadMedia()
 {
-  if ( !gStretchedTexture.loadTextureFromFile( "./mini_opengl.png" ) )
+  if ( !gStretchedTexture.loadTextureFromFile( "../assets/mini_opengl.png" ) )
   {
     printf( "Unable to load mini texture!\n" );
     return false;
