@@ -6,3 +6,4 @@ testing out open gl
 
 * freeglut3-dev
 * libdevil-dev
+* libglew-dev
