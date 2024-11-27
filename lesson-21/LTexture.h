@@ -42,9 +42,9 @@ class LTexture
 
   protected:
     bool loadPixelsFromFile8( std::string );
-    bool loadPixelsFromFile32( std::string );
-
     bool loadTextureFromPixels8();
+
+    bool loadPixelsFromFile32( std::string );
     bool loadTextureFromPixels32();
 
     bool loadTextureFromPixels32(
