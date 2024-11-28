@@ -1,0 +1,7 @@
+uniform vec4 LPolygonColor = vec4( 1.0, 1.0, 0.0, 1.0 );
+
+void main()
+{
+    //Set fragment
+    gl_FragColor = LPolygonColor;
+}

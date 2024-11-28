@@ -1,0 +1,16 @@
+#if __VERSION__ >= 130
+
+in vec4 multiColor;
+
+out vec4 gl_FragColor;
+
+#else
+
+varying vec4 multiColor;
+
+#endif
+
+void main()
+{
+    gl_FragColor = multiColor;
+}
