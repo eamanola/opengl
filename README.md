@@ -8,3 +8,4 @@ testing out open gl
 * libdevil-dev
 * libglew-dev
 * libfreetype-dev
+* libglm-dev
