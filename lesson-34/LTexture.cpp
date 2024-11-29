@@ -4,8 +4,11 @@
 #include <string>
 #include <cstring>
 #include "./LVertexData2D.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 GLenum DEFAULT_TEXTURE_WRAP = GL_REPEAT;
+LTexturedPolygonProgram2D* LTexture::mTexturedPolygonProgram2D = NULL;
 
 LTexture::LTexture()
 {
@@ -33,7 +36,7 @@ LTexture::~LTexture()
 
 void LTexture::render( GLfloat x, GLfloat y, LFRect* clip )
 {
-  if(mTextureID != 0)
+  if( mTextureID != 0 )
   {
     //Texture coordinates
     GLfloat texTop = 0.f;
@@ -56,8 +59,6 @@ void LTexture::render( GLfloat x, GLfloat y, LFRect* clip )
       quadHeight = clip->h;
     }
 
-    glTranslatef( x, y, 0.f );
-
     LVertexData2D vData[ 4 ];
 
     vData[ 0 ].texCoord.s = texLeft;  vData[ 0 ].texCoord.t = texTop;
@@ -70,27 +71,36 @@ void LTexture::render( GLfloat x, GLfloat y, LFRect* clip )
     vData[ 2 ].position.x = quadWidth; vData[ 2 ].position.y = quadHeight;
     vData[ 3 ].position.x = 0.f;       vData[ 3 ].position.y = quadHeight;;
 
+    mTexturedPolygonProgram2D->leftMultModelView( glm::translate( glm::vec3( x, y, 0.f ) ) );
+    mTexturedPolygonProgram2D->updateModelView();
+
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture( GL_TEXTURE_2D, mTextureID );
 
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    mTexturedPolygonProgram2D->enableVertexPointer();
+    mTexturedPolygonProgram2D->enableTexCoordPointer();
 
       glBindBuffer( GL_ARRAY_BUFFER, mVBOID );
-      glBufferSubData( GL_ARRAY_BUFFER, 0, 4 * sizeof(LVertexData2D), vData );
 
-      glTexCoordPointer(
-        2, GL_FLOAT, sizeof(LVertexData2D), (GLvoid*)offsetof( LVertexData2D, texCoord )
+      glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( vData ), vData );
+
+      mTexturedPolygonProgram2D->setTexCoordPointer(
+        sizeof( LVertexData2D ),
+        (GLvoid*)offsetof( LVertexData2D, texCoord )
       );
-
-      glVertexPointer(
-        2, GL_FLOAT, sizeof(LVertexData2D), (GLvoid*)offsetof( LVertexData2D, position )
+      mTexturedPolygonProgram2D->setVertexPointer(
+        sizeof( LVertexData2D ),
+        (GLvoid*)offsetof( LVertexData2D, position )
       );
 
       glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mIBOID );
-      glDrawElements( GL_QUADS, 4, GL_UNSIGNED_INT, NULL );
+      glDrawElements( GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL );
 
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+      glBindBuffer( GL_ARRAY_BUFFER, 0 );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    mTexturedPolygonProgram2D->disableVertexPointer();
+    mTexturedPolygonProgram2D->disableTexCoordPointer();
   }
 }
 
@@ -426,11 +436,7 @@ bool LTexture::loadTextureFromPixels( GLuint pixelFormat )
     GLenum error = glGetError();
     if( error != GL_NO_ERROR )
     {
-      printf(
-        "Error loading texture from %p pixels! %s\n",
-        pixels,
-        gluErrorString( error )
-      );
+      printf( "Error loading texture from %p pixels! %s\n", pixels, gluErrorString( error ) );
       success = false;
     }
 
@@ -439,6 +445,16 @@ bool LTexture::loadTextureFromPixels( GLuint pixelFormat )
       initVBO();
 
       mPixelFormat = pixelFormat;
+      if( pixelFormat == GL_RGBA )
+      {
+        delete[] mPixels32;
+        mPixels32 = NULL;
+      }
+      else
+      {
+        delete[] mPixels8;
+        mPixels8 = NULL;
+      }
     }
   }
   else{
@@ -461,26 +477,12 @@ bool LTexture::loadTextureFromPixels( GLuint pixelFormat )
 
 bool LTexture::loadTextureFromPixels32()
 {
-  bool success = loadTextureFromPixels( GL_RGBA );
-  if (success)
-  {
-    delete[] mPixels32;
-    mPixels32 = NULL;
-  }
-
-  return success;
+  return loadTextureFromPixels( GL_RGBA );
 }
 
 bool LTexture::loadTextureFromPixels8()
 {
-  bool success = loadTextureFromPixels( GL_ALPHA );
-  if (success)
-  {
-    delete[] mPixels8;
-    mPixels8 = NULL;
-  }
-
-  return success;
+  return loadTextureFromPixels( GL_ALPHA );
 }
 
 bool LTexture::loadTextureFromFileWithColorKey32(
@@ -603,6 +605,11 @@ bool LTexture::unlock()
   }
 
   return false;
+}
+
+void LTexture::setTexturedPolygonProgram2D( LTexturedPolygonProgram2D* program )
+{
+  mTexturedPolygonProgram2D = program;
 }
 
 GLuint LTexture::powerOfTwo( GLuint num )
